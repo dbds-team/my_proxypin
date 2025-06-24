@@ -148,11 +148,49 @@ jobs:
       if: github.event_name != 'pull_request'
       run: flutter build appbundle --release
       
+    - name: List build outputs and rename APK
+      if: github.event_name != 'pull_request'
+      run: |
+        echo "=== Checking build outputs ==="
+        echo "APK directory structure:"
+        find build/app/outputs -name "*.apk" -type f | head -10 || echo "No APK files found"
+        
+        echo "AAB directory structure:"
+        find build/app/outputs -name "*.aab" -type f | head -10 || echo "No AAB files found"
+        
+        echo "Complete build directory structure:"
+        ls -la build/app/outputs/ || echo "build/app/outputs directory not found"
+        
+        if [ -d "build/app/outputs/flutter-apk" ]; then
+          echo "Flutter APK directory contents:"
+          ls -la build/app/outputs/flutter-apk/
+          
+          # Rename APK for better release naming
+          if [ -f "build/app/outputs/flutter-apk/app-release.apk" ]; then
+            echo "Renaming APK file for release..."
+            
+            # Get version from pubspec.yaml or use timestamp
+            VERSION=$(grep '^version:' pubspec.yaml | cut -d' ' -f2 | cut -d'+' -f1 || echo "1.0.0")
+            NEW_NAME="proxypin-${VERSION}-release.apk"
+            
+            cp "build/app/outputs/flutter-apk/app-release.apk" "build/app/outputs/flutter-apk/${NEW_NAME}"
+            echo "✓ Created: build/app/outputs/flutter-apk/${NEW_NAME}"
+            ls -la "build/app/outputs/flutter-apk/${NEW_NAME}"
+          fi
+        fi
+        
+        if [ -d "build/app/outputs/apk" ]; then
+          echo "Standard APK directory contents:"
+          ls -la build/app/outputs/apk/
+        fi
+      
     - name: Upload APK artifact
       uses: actions/upload-artifact@v4
       with:
         name: proxypin-release-apk
-        path: build/app/outputs/flutter-apk/proxypin-*-release.apk
+        path: |
+          build/app/outputs/flutter-apk/app-release.apk
+          build/app/outputs/flutter-apk/proxypin-*-release.apk
         retention-days: 30
         
     - name: Upload AAB artifact
@@ -168,6 +206,7 @@ jobs:
       uses: softprops/action-gh-release@v1
       with:
         files: |
+          build/app/outputs/flutter-apk/app-release.apk
           build/app/outputs/flutter-apk/proxypin-*-release.apk
           build/app/outputs/bundle/release/app-release.aab
         draft: false
