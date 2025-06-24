@@ -30,7 +30,7 @@ if (keystorePropertiesFile.exists()) {
 
 android {
     namespace "com.network.proxy"
-    compileSdk flutter.compileSdkVersion
+    compileSdk 35
 //    ndkVersion flutter.ndkVersion
     ndkVersion "26.1.10909125"
 

@@ -28,8 +28,15 @@ jobs:
     - name: Check Dart version  
       run: dart --version
       
-    - name: Skip dependency issues
-      run: echo "Using original dependencies without modification"
+    - name: Create dependency overrides for Flutter 3.24.5 compatibility
+      run: |
+        cat >> pubspec.yaml << 'EOF'
+        
+        dependency_overrides:
+          window_manager: 0.4.2
+          image_pickers: 1.0.4
+          toastification: 2.3.0
+        EOF
         
     - name: Get dependencies
       run: flutter pub get --ignore-dependency-resolution-errors || true
