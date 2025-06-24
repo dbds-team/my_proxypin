@@ -52,10 +52,38 @@ jobs:
     - name: Run Flutter tests (skipped for compatibility)
       run: echo "Tests skipped due to dependency compatibility issues"
       
-    - name: Decode keystore file
+    - name: Debug secrets and decode keystore file
       if: github.event_name != 'pull_request'
       run: |
+        echo "=== Debugging Organization Secrets ==="
+        
+        # Check if secrets are available
+        [ -n "${{ secrets.KEY_JKS }}" ] && echo "✓ KEY_JKS available (length: $(echo '${{ secrets.KEY_JKS }}' | wc -c))" || echo "✗ KEY_JKS missing"
+        [ -n "${{ secrets.ALIAS }}" ] && echo "✓ ALIAS available: ${{ secrets.ALIAS }}" || echo "✗ ALIAS missing" 
+        [ -n "${{ secrets.ANDROID_KEY_PASSWORD }}" ] && echo "✓ ANDROID_KEY_PASSWORD available" || echo "✗ ANDROID_KEY_PASSWORD missing"
+        [ -n "${{ secrets.ANDROID_STORE_PASSWORD }}" ] && echo "✓ ANDROID_STORE_PASSWORD available" || echo "✗ ANDROID_STORE_PASSWORD missing"
+        
+        echo "=== Decoding keystore file ==="
         echo "${{ secrets.KEY_JKS }}" | base64 -d > android/app/dbds-release.jks
+        
+        # Verify the created jks file
+        if [ -f android/app/dbds-release.jks ]; then
+          echo "✓ JKS file created, size: $(stat -c%s android/app/dbds-release.jks) bytes"
+          
+          # Test keystore with provided password
+          if keytool -list -keystore android/app/dbds-release.jks -storepass "${{ secrets.ANDROID_STORE_PASSWORD }}" > /dev/null 2>&1; then
+            echo "✓ Keystore password verified"
+            # List aliases to verify the alias exists
+            echo "Available aliases:"
+            keytool -list -keystore android/app/dbds-release.jks -storepass "${{ secrets.ANDROID_STORE_PASSWORD }}" | grep "Alias name" || true
+          else
+            echo "✗ Keystore password verification failed"
+            exit 1
+          fi
+        else
+          echo "✗ Failed to create JKS file"
+          exit 1
+        fi
         
     - name: Create key.properties
       if: github.event_name != 'pull_request'

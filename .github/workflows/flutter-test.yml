@@ -15,6 +15,49 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
       
+    - name: Debug Organization Secrets (DBDS Keystore)
+      run: |
+        echo "=== DBDS Organization Secrets Debug ==="
+        echo "Checking organization secrets for keystore signing..."
+        
+        # Check KEY_JKS
+        if [ -n "${{ secrets.KEY_JKS }}" ]; then
+          echo "✓ KEY_JKS secret is available"
+          KEY_JKS_LENGTH=$(echo "${{ secrets.KEY_JKS }}" | wc -c)
+          echo "  Length: $KEY_JKS_LENGTH characters"
+          
+          # Validate base64 format
+          if echo "${{ secrets.KEY_JKS }}" | base64 -d > /dev/null 2>&1; then
+            echo "  ✓ Base64 format is valid"
+          else
+            echo "  ✗ Invalid base64 format"
+          fi
+        else
+          echo "✗ KEY_JKS secret is missing"
+        fi
+        
+        # Check ALIAS
+        if [ -n "${{ secrets.ALIAS }}" ]; then
+          echo "✓ ALIAS secret is available: ${{ secrets.ALIAS }}"
+        else
+          echo "✗ ALIAS secret is missing"
+        fi
+        
+        # Check passwords (without revealing values)
+        if [ -n "${{ secrets.ANDROID_KEY_PASSWORD }}" ]; then
+          echo "✓ ANDROID_KEY_PASSWORD secret is available"
+        else
+          echo "✗ ANDROID_KEY_PASSWORD secret is missing"
+        fi
+        
+        if [ -n "${{ secrets.ANDROID_STORE_PASSWORD }}" ]; then
+          echo "✓ ANDROID_STORE_PASSWORD secret is available"
+        else
+          echo "✗ ANDROID_STORE_PASSWORD secret is missing"
+        fi
+        
+        echo "=== End DBDS Secrets Debug ==="
+      
     - name: Setup Flutter
       uses: subosito/flutter-action@v2
       with:

@@ -1,36 +1,36 @@
-# DBDS Android 签名密钥配置
+# DBDS 签名密钥配置说明
 
-## GitHub Secrets 配置
+## 概述
+此目录包含 DBDS 项目的 Android 应用签名相关密钥配置文件和说明。
 
-在 GitHub 仓库的 **Settings > Secrets and variables > Actions** 中添加以下 4 个变量：
+## 组织 Secrets 配置
+已在 GitHub Organization 中配置的密钥变量：
 
-| 变量名 | 值 | 说明 |
-|--------|-----|------|
-| `KEY_JKS` | [见 github_secrets.txt] | base64 编码的证书内容 |
-| `ALIAS` | `dbds-key` | 证书别名 |
-| `ANDROID_KEY_PASSWORD` | `dbds2024secret` | 密钥密码 |
-| `ANDROID_STORE_PASSWORD` | `dbds2024secret` | 证书库密码 |
+| 变量名 | 说明 | 状态 |
+|--------|------|------|
+| `KEY_JKS` | Base64 编码的 Android 签名证书内容 | ✅ 已配置 |
+| `ALIAS` | 证书别名 | ✅ 已配置 |
+| `ANDROID_KEY_PASSWORD` | 密钥密码 | ✅ 已配置 |
+| `ANDROID_STORE_PASSWORD` | 证书库密码 | ✅ 已配置 |
+
+## 调试信息
+- 在 `android-build.yml` 工作流中添加了详细的密钥验证和调试信息
+- 在 `flutter-test.yml` 中添加了 secrets 可用性检查
+- 包含 base64 格式验证和 keystore 密码验证
+
+## 工作流修改
+1. **android-build.yml**: 添加了完整的密钥验证流程
+2. **flutter-test.yml**: 添加了开始时的 secrets 检查
+
+## 故障排除
+如果构建失败，查看工作流日志中的调试信息：
+- 检查 secrets 是否正确读取
+- 验证 base64 编码格式
+- 确认 keystore 密码正确性
+- 验证证书别名存在
 
 ## 文件说明
+- `dbds_secrets.properties` - Properties 格式的配置模板
+- `README.md` - 本说明文档
 
-- **dbds-release.jks**: Android 签名密钥库文件
-- **github_secrets.txt**: 完整的 GitHub Secrets 配置内容
-- **README.md**: 本说明文件
-
-## 密钥信息
-
-- **证书别名**: dbds-key
-- **有效期**: 2025-06-24 至 2052-11-09 (约27年)
-- **密钥算法**: RSA 2048位
-- **证书主题**: CN=DBDS, OU=Development, O=DBDS, L=Beijing, S=Beijing, C=CN
-- **SHA256指纹**: B1:60:E5:42:0D:08:6A:05:AF:49:79:E6:EE:55:6F:F0:0B:EC:A2:BB:CA:57:AF:39:4E:7A:E6:F1:01:4A:93:50
-
-## 使用方法
-
-1. 将 `KEY_JKS` 中的 base64 字符串复制到 GitHub Secrets
-2. 设置其他三个变量的值
-3. 在 GitHub Actions 工作流中引用这些密钥进行 Android 应用签名
-
-## 安全提醒
-
-⚠️ **重要**: 请妥善保管这些密钥信息，不要泄露给他人！ 
+创建时间: $(date '+%Y-%m-%d %H:%M:%S') 
