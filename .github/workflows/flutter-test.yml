@@ -18,7 +18,7 @@ jobs:
     - name: Setup Flutter
       uses: subosito/flutter-action@v2
       with:
-        flutter-version: '3.24.5'
+        flutter-version: '3.27.0'
         channel: 'stable'
         cache: true
         
@@ -28,6 +28,11 @@ jobs:
     - name: Check Dart version  
       run: dart --version
       
+    - name: Fix flutter_lints compatibility
+      run: |
+        # 临时降级 flutter_lints 以兼容当前 Dart SDK
+        sed -i 's/flutter_lints: \^6\.0\.0/flutter_lints: ^3.0.0/' pubspec.yaml
+        
     - name: Get dependencies
       run: flutter pub get
       

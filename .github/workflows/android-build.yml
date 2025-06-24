@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
 
 env:
-  FLUTTER_VERSION: "3.24.5"
+  FLUTTER_VERSION: "3.27.0"
 
 jobs:
   build-android:
@@ -31,6 +31,11 @@ jobs:
         flutter-version: ${{ env.FLUTTER_VERSION }}
         channel: 'stable'
         cache: true
+        
+    - name: Fix flutter_lints compatibility
+      run: |
+        # 临时降级 flutter_lints 以兼容当前 Dart SDK
+        sed -i 's/flutter_lints: \^6\.0\.0/flutter_lints: ^3.0.0/' pubspec.yaml
         
     - name: Get Flutter dependencies
       run: flutter pub get
