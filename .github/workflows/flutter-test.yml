@@ -26,9 +26,44 @@ jobs:
           KEY_JKS_LENGTH=$(echo "${{ secrets.KEY_JKS }}" | wc -c)
           echo "  Length: $KEY_JKS_LENGTH characters"
           
-          # Validate base64 format
+          # Validate base64 format and test keystore
           if echo "${{ secrets.KEY_JKS }}" | base64 -d > /dev/null 2>&1; then
             echo "  ✓ Base64 format is valid"
+            
+            # Create temporary keystore for testing
+            temp_jks="/tmp/test_dbds.jks"
+            echo "${{ secrets.KEY_JKS }}" | base64 -d > "$temp_jks"
+            
+            if [ -f "$temp_jks" ]; then
+              echo "  ✓ Temporary JKS file created ($(stat -c%s "$temp_jks") bytes)"
+              
+              # Test keystore password
+              echo "  Testing keystore with store password..."
+              if keytool -list -keystore "$temp_jks" -storepass "${{ secrets.ANDROID_STORE_PASSWORD }}" > /dev/null 2>&1; then
+                echo "  ✓ Keystore and store password verified"
+                echo "  Available aliases:"
+                keytool -list -keystore "$temp_jks" -storepass "${{ secrets.ANDROID_STORE_PASSWORD }}" | grep "Alias name" | sed 's/^/    /' || true
+                
+                # Test specific alias and key password
+                echo "  Testing alias '${{ secrets.ALIAS }}' with key password..."
+                if keytool -list -keystore "$temp_jks" -alias "${{ secrets.ALIAS }}" -storepass "${{ secrets.ANDROID_STORE_PASSWORD }}" -keypass "${{ secrets.ANDROID_KEY_PASSWORD }}" > /dev/null 2>&1; then
+                  echo "  ✓ Alias '${{ secrets.ALIAS }}' and key password verified"
+                else
+                  echo "  ✗ Alias '${{ secrets.ALIAS }}' or key password verification failed"
+                  echo "  Detailed error:"
+                  keytool -list -keystore "$temp_jks" -alias "${{ secrets.ALIAS }}" -storepass "${{ secrets.ANDROID_STORE_PASSWORD }}" -keypass "${{ secrets.ANDROID_KEY_PASSWORD }}" 2>&1 | sed 's/^/    /' || true
+                fi
+              else
+                echo "  ✗ Keystore password verification failed"
+                echo "  Keytool error:"
+                keytool -list -keystore "$temp_jks" -storepass "${{ secrets.ANDROID_STORE_PASSWORD }}" 2>&1 | head -5 | sed 's/^/    /' || true
+              fi
+              
+              # Cleanup
+              rm -f "$temp_jks"
+            else
+              echo "  ✗ Failed to create temporary JKS file"
+            fi
           else
             echo "  ✗ Invalid base64 format"
           fi

@@ -71,6 +71,7 @@ jobs:
           echo "✓ JKS file created, size: $(stat -c%s android/app/dbds-release.jks) bytes"
           
           # Test keystore with provided password
+          echo "Testing keystore with provided store password..."
           if keytool -list -keystore android/app/dbds-release.jks -storepass "${{ secrets.ANDROID_STORE_PASSWORD }}" > /dev/null 2>&1; then
             echo "✓ Keystore password verified"
             # List aliases to verify the alias exists
@@ -78,6 +79,21 @@ jobs:
             keytool -list -keystore android/app/dbds-release.jks -storepass "${{ secrets.ANDROID_STORE_PASSWORD }}" | grep "Alias name" || true
           else
             echo "✗ Keystore password verification failed"
+            echo "Attempting to get more detailed error information..."
+            
+            # Try to get detailed error output
+            echo "Keytool error output:"
+            keytool -list -keystore android/app/dbds-release.jks -storepass "${{ secrets.ANDROID_STORE_PASSWORD }}" 2>&1 || true
+            
+            # Try without password to see if keystore is valid
+            echo "Testing if keystore file is readable (will prompt for password):"
+            echo "" | keytool -list -keystore android/app/dbds-release.jks 2>&1 | head -10 || true
+            
+            # Check if alias verification works with key password
+            echo "Testing with alias and key password:"
+            keytool -list -keystore android/app/dbds-release.jks -alias "${{ secrets.ALIAS }}" -storepass "${{ secrets.ANDROID_STORE_PASSWORD }}" -keypass "${{ secrets.ANDROID_KEY_PASSWORD }}" 2>&1 || true
+            
+            echo "=== Keystore Debugging Complete ==="
             exit 1
           fi
         else
