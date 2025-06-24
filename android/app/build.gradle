@@ -81,6 +81,22 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+    applicationVariants.all { variant ->
+        variant.outputs.all {
+            def versionName = variant.versionName
+            def versionCode = variant.versionCode
+            def buildType = variant.buildType.name
+            outputFileName = "proxypin-${versionName}-${buildType}.apk"
+        }
+    }
+    
+    // 自定义 AAB 文件名
+    android.applicationVariants.all { variant ->
+        if (variant.buildType.name == 'release') {
+            variant.packageApplicationProvider.get().archiveFileName = "proxypin-${variant.versionName}-${variant.buildType.name}.aab"
+        }
+    }
 }
 
 flutter {
