@@ -100,6 +100,12 @@
 ### Q: 构建在 PR 中失败
 **A**: 这是正常的，PR 构建不使用签名 secrets，只构建 debug 版本
 
+### Q: 依赖解析失败 "flutter_lints requires SDK version ^3.8.0"
+**A**: 这是 Dart SDK 版本兼容性问题：
+- 工作流已配置使用 Flutter 3.24.5，包含兼容的 Dart SDK
+- 如果仍有问题，可以临时降级 `flutter_lints` 版本到 `^3.0.0`
+- 确保项目的 `pubspec.yaml` 中 SDK 版本要求与 Flutter 版本兼容
+
 ## 密钥信息
 
 - **证书文件**: `temp_jks/dbds-release.jks`
