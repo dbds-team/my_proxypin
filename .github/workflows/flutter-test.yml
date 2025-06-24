@@ -28,14 +28,18 @@ jobs:
     - name: Check Dart version  
       run: dart --version
       
-    - name: Fix flutter_lints compatibility
+    - name: Fix dependency compatibility
       run: |
         # 临时降级 flutter_lints 以兼容当前 Dart SDK
         sed -i 's/flutter_lints: \^6\.0\.0/flutter_lints: ^3.0.0/' pubspec.yaml
         # 临时降级 device_info_plus 以兼容当前 Dart SDK
         sed -i 's/device_info_plus: \^11\.5\.0/device_info_plus: ^11.3.0/' pubspec.yaml
         # 临时降级 toastification 以兼容当前 Flutter SDK
-        sed -i 's/toastification: \^3\.0\.2/toastification: ^3.0.1/' pubspec.yaml
+        sed -i 's/toastification: \^3\.0\.1/toastification: ^2.2.0/' pubspec.yaml
+        # 临时降级 window_manager 以兼容当前 Flutter SDK
+        sed -i 's/window_manager: \^0\.5\.0/window_manager: ^0.3.9/' pubspec.yaml
+        # 临时降级 image_pickers 以兼容当前 Flutter SDK
+        sed -i 's/image_pickers: \^2\.0\.6/image_pickers: ^1.0.4/' pubspec.yaml
         
     - name: Get dependencies
       run: flutter pub get
