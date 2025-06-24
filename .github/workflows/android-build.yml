@@ -38,8 +38,9 @@ jobs:
         
         dependency_overrides:
           window_manager: 0.4.2
-          image_pickers: 1.0.4
+          image_pickers: 2.0.5+2
           toastification: 2.3.0
+          device_info_plus: 10.1.2
         EOF
         
     - name: Get Flutter dependencies

@@ -118,7 +118,6 @@ class CustomToast extends StatelessWidget {
       showProgressBar: false,
       dragToClose: true,
       closeOnClick: true,
-      closeButton: ToastCloseButton(showType: CloseButtonShowType.onHover),
     );
   }
 }
