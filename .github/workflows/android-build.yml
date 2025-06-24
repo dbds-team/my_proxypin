@@ -94,7 +94,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: proxypin-release-aab
-        path: build/app/outputs/bundle/release/proxypin-*-release.aab
+        path: build/app/outputs/bundle/release/app-release.aab
         retention-days: 30
         
     - name: Create Release
@@ -103,7 +103,7 @@ jobs:
       with:
         files: |
           build/app/outputs/flutter-apk/proxypin-*-release.apk
-          build/app/outputs/bundle/release/proxypin-*-release.aab
+          build/app/outputs/bundle/release/app-release.aab
         draft: false
         prerelease: false
         generate_release_notes: true
