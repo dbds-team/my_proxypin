@@ -32,7 +32,12 @@ jobs:
             
             # Create temporary keystore for testing
             temp_jks="/tmp/test_dbds.jks"
-            echo "${{ secrets.KEY_JKS }}" | base64 -d > "$temp_jks"
+            
+            # Clean base64 and decode
+            echo "  Cleaning and decoding base64..."
+            KEY_JKS_CLEAN=$(echo "${{ secrets.KEY_JKS }}" | tr -d ' \n\r\t')
+            echo "  Cleaned base64 length: $(echo "$KEY_JKS_CLEAN" | wc -c) chars"
+            echo "$KEY_JKS_CLEAN" | base64 -d > "$temp_jks"
             
             if [ -f "$temp_jks" ]; then
               echo "  ✓ Temporary JKS file created ($(stat -c%s "$temp_jks") bytes)"

@@ -64,11 +64,36 @@ jobs:
         [ -n "${{ secrets.ANDROID_STORE_PASSWORD }}" ] && echo "✓ ANDROID_STORE_PASSWORD available" || echo "✗ ANDROID_STORE_PASSWORD missing"
         
         echo "=== Decoding keystore file ==="
-        echo "${{ secrets.KEY_JKS }}" | base64 -d > android/app/dbds-release.jks
+        
+        # First, verify the base64 content length and format
+        KEY_JKS_RAW_LENGTH=$(echo "${{ secrets.KEY_JKS }}" | wc -c)
+        echo "Raw KEY_JKS length: $KEY_JKS_RAW_LENGTH characters"
+        
+        # Check for whitespace/newlines in base64
+        KEY_JKS_CLEAN=$(echo "${{ secrets.KEY_JKS }}" | tr -d ' \n\r\t')
+        KEY_JKS_CLEAN_LENGTH=$(echo "$KEY_JKS_CLEAN" | wc -c)
+        echo "Cleaned KEY_JKS length: $KEY_JKS_CLEAN_LENGTH characters"
+        
+        # Decode with cleaned base64
+        echo "Decoding cleaned base64 to JKS file..."
+        echo "$KEY_JKS_CLEAN" | base64 -d > android/app/dbds-release.jks
         
         # Verify the created jks file
         if [ -f android/app/dbds-release.jks ]; then
-          echo "✓ JKS file created, size: $(stat -c%s android/app/dbds-release.jks) bytes"
+          JKS_SIZE=$(stat -c%s android/app/dbds-release.jks)
+          echo "✓ JKS file created, size: $JKS_SIZE bytes"
+          
+          # Calculate expected size from base64 length
+          EXPECTED_SIZE=$(echo "($KEY_JKS_CLEAN_LENGTH * 3) / 4" | bc)
+          echo "Expected size from base64: ~$EXPECTED_SIZE bytes"
+          
+          # Verify file is not empty and has reasonable size
+          if [ "$JKS_SIZE" -lt 100 ]; then
+            echo "✗ JKS file too small, likely corrupted"
+            echo "Hex dump of first 50 bytes:"
+            hexdump -C android/app/dbds-release.jks | head -5
+            exit 1
+          fi
           
           # Test keystore with provided password
           echo "Testing keystore with provided store password..."
