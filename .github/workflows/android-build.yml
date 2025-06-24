@@ -42,8 +42,9 @@ jobs:
         sed -i 's/toastification: \^3\.0\.1/toastification: ^2.2.0/' pubspec.yaml
         # 临时降级 window_manager 以兼容当前 Flutter SDK
         sed -i 's/window_manager: \^0\.5\.0/window_manager: ^0.3.9/' pubspec.yaml
-        # 临时降级 image_pickers 以兼容当前 Flutter SDK
-        sed -i 's/image_pickers: \^2\.0\.6/image_pickers: ^1.0.4/' pubspec.yaml
+        # 注释掉有兼容性问题的包，避免依赖冲突
+        sed -i 's/^  image_pickers:/#  image_pickers:/' pubspec.yaml
+        sed -i 's/^  flutter_qr_reader_plus:/#  flutter_qr_reader_plus:/' pubspec.yaml
         
     - name: Get Flutter dependencies
       run: flutter pub get
