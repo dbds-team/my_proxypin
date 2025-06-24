@@ -1,8 +1,4 @@
-# GitHub Secrets 配置参数 - DBDS 主题
-# 在 GitHub 仓库的 Settings > Secrets and variables > Actions 中添加以下变量
-
-## KEY_JKS (base64 编码的证书内容)
-KEY_JKS=MIIKqAIBAzCCClIGCSqGSIb3DQEHAaCCCkMEggo/MIIKOzCCBbIGCSqGSIb3DQEHAaCCBaMEggWf
+MIIKqAIBAzCCClIGCSqGSIb3DQEHAaCCCkMEggo/MIIKOzCCBbIGCSqGSIb3DQEHAaCCBaMEggWf
 MIIFmzCCBZcGCyqGSIb3DQEMCgECoIIFQDCCBTwwZgYJKoZIhvcNAQUNMFkwOAYJKoZIhvcNAQUM
 MCsEFMCmZ50mkX/5jIPvB+CNOMz3bELaAgInEAIBIDAMBggqhkiG9w0CCQUAMB0GCWCGSAFlAwQB
 KgQQfXjQH0EtWDo/LrxLC1PcfwSCBNCljOUMlR/7YdeNX4m+0afrIGAq+AoTRPMIilgV5A+CRCtT
@@ -50,30 +46,3 @@ WP02TGTv7BxB7BKQLRrUwBw2MUR+Penwrs7pANfYvkZXbGWcZlCxQsLWlP65toPp4lWglnrqoDnY
 +ga7Wr2VKegq6edw4N+LJybvuyL2NlLbQ9gYqaLEfgXz1tv203P8cVrgjgibn25tf2nZtN8jOwRO
 1od3zIgnJK0e2VGmgHjWHWZQjlmU+XuApbFRV9JVwDBNMDEwDQYJYIZIAWUDBAIBBQAEIMGKqVrT
 qP12T0Yp9styE3lpKl67kH7H8AD3w0iBJrnRBBTgwEfjkvwpPp+AJfuvi9SM4+9kvwICJxA=
-
-
-## ALIAS (证书别名)
-ALIAS=dbds-key
-
-## ANDROID_KEY_PASSWORD (密钥密码)
-ANDROID_KEY_PASSWORD=dbds2024secret
-
-## ANDROID_STORE_PASSWORD (证书库密码)
-ANDROID_STORE_PASSWORD=dbds2024secret
-
-## 文件信息
-# 密钥库文件: dbds-release.jks
-# 生成时间: $(date)
-# 有效期: 10000 天 (约27年)
-# 密钥算法: RSA 2048位
-# 证书主题: CN=DBDS, OU=Development, O=DBDS, L=Beijing, S=Beijing, C=CN
-
-## 使用说明
-# 1. 在 GitHub 仓库中打开 Settings > Secrets and variables > Actions
-# 2. 点击 "New repository secret" 添加以上4个变量
-# 3. 在 GitHub Actions 中通过 ${{ secrets.KEY_JKS }} 等方式引用
-
-## 安全提醒
-# - 请妥善保管这些密钥信息，不要泄露给他人
-# - 建议定期更新密钥和密码
-# - 仅在必要时使用这些密钥进行签名 
