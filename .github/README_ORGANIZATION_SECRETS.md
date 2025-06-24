@@ -101,9 +101,10 @@
 **A**: 这是正常的，PR 构建不使用签名 secrets，只构建 debug 版本
 
 ### Q: 依赖解析失败
-**A**: 如果遇到 "version solving failed" 错误，通常是 Dart SDK 版本与某个依赖不兼容。工作流已添加自动降级脚本来处理此问题。
+**A**: 如果遇到 "version solving failed" 错误，通常是 Dart/Flutter SDK 版本与某个依赖不兼容。工作流已添加自动降级脚本来处理此问题。
 - **flutter_lints**: `^6.0.0` -> `^3.0.0`
 - **device_info_plus**: `^11.5.0` -> `^11.3.0`
+- **toastification**: `^3.0.2` -> `^3.0.1`
 
 如果还有其他包出现问题，可以按照 `Fix dependency compatibility` 步骤中的方式，添加新的 `sed` 命令来解决。
 
